@@ -9,4 +9,3 @@ mlflow.db            # локальная база compose-MLflow
 drift_report.html    # генерируется drift_check.py
 .env                 # локальные секреты, если заведёте
 .DS_Store            # мусор macOS
-# данные (data/*.csv) сюда впишет сам DVC на дне 4
