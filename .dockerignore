@@ -1,0 +1,16 @@
+.git
+.github
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+tests/               # тесты бегут в CI, в проде не нужны
+notebooks/
+data/                # данным место в хранилище, не в образе
+k8s/
+dags/
+mlflow.db
+drift_report.html
+*.md                 # README в образе не нужен
+.dvc/cache          # локальный кэш DVC бывает гигантским

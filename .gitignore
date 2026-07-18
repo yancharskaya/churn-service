@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+model.pkl            # артефакт, воспроизводится train.py; с дня 3
+                     #   модели живут в MLflow, не в git
+mlflow.db            # локальная база compose-MLflow
+drift_report.html    # генерируется drift_check.py
+.env                 # локальные секреты, если заведёте
+.DS_Store            # мусор macOS
+# данные (data/*.csv) сюда впишет сам DVC на дне 4

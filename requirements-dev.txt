@@ -1,0 +1,7 @@
+-r requirements.txt   # включает в себя весь runtime +
+pytest==9.1.1
+httpx==0.28.1         # нужен TestClient'у из FastAPI
+ruff==0.15.22
+pre-commit==4.6.0
+dvc[s3]==3.67.1       # с дня 4
+evidently==0.7.21     # с дня 9
