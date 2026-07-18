@@ -1,13 +1,17 @@
 # src/main.py — сам сервис (запуск: uvicorn src.main:app --port 8000)
 from fastapi import FastAPI
 from pydantic import BaseModel
-import joblib, logging
+import logging, mlflow.sklearn, os
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 app = FastAPI()
-model = joblib.load('model.pkl')        # с дня 3: load_model из реестра
+
+mlflow.set_tracking_uri(os.getenv('MLFLOW_TRACKING_URI',
+                                  'http://localhost:5000'))
+model = mlflow.sklearn.load_model('models:/churn-model@champion')
+
 log.info('model loaded')
 
 class Features(BaseModel):              # breast_cancer имеет 30 признаков;
