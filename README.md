@@ -14,6 +14,7 @@ docker compose up -d      # запустить MLflow (http://localhost:5000) и
 make install              # создать .venv и установить зависимости из requirements-dev.txt
 make train                # обучить модель (использует переменные из train/.env)
 make start-api            # запустить API: http://localhost:8000/docs (использует переменные из .env)
+make data-generate        # создать датасет. При желании задать количество строк 0<=COUNT=<569 : make data-generate COUNT=100 
 
 source .venv/bin/activate # временно поменять переменную окружения PATH, брать все команды из venv
 ```
