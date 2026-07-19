@@ -11,3 +11,6 @@ clean:
 .PHONY: train
 train:
 	.venv/bin/dotenv -f train/.env run -- .venv/bin/python train/train.py
+
+data-generate:
+	.venv/bin/python data/generate.py
