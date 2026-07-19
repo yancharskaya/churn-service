@@ -18,6 +18,31 @@ make data-generate        # создать датасет. При желании
 
 source .venv/bin/activate # временно поменять переменную окружения PATH, брать все команды из venv
 ```
+## Конфигурация dvc (после make install):
+```
+dvc remote modify --local storage endpointurl <url>
+dvc remote modify --local storage access_key_id <name>
+dvc remote modify --local storage secret_access_key <password>
+```
+
+## Использование dvc
+```
+dvc add data/train.csv                # файл → под контроль DVC
+git add data/train.csv.dvc data/.gitignore
+git commit -m 'data: v1'              # Git запомнил УКАЗАТЕЛЬ
+dvc push                              # сами данные → в MinIO
+
+# --- вышла «версия 2» данных (добавились строки) ---
+dvc add data/train.csv                # пересчитал отпечаток, обновил .dvc
+git commit -am 'data: v2' && dvc push
+
+# --- откатиться к v1 (машина времени) ---
+git checkout HEAD~1 -- data/train.csv.dvc   # старый указатель
+dvc checkout                                 # DVC подменил сам файл
+
+# --- у коллеги / в CI с чистого клона ---
+git clone ... && dvc pull             # git даёт указатели, dvc — данные
+```
 
 ## Тесты и стиль
 ```

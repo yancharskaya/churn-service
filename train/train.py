@@ -6,6 +6,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score
 import os
+import pandas as pd
 
 host = os.getenv("HOST", 'http://localhost:5000')
 churn = os.getenv("CHURN", 'churn')
@@ -13,7 +14,13 @@ churn = os.getenv("CHURN", 'churn')
 mlflow.set_tracking_uri(host)                      # сервер из compose
 mlflow.set_experiment(churn)                       # папка для run'ов
 
-X, y = load_breast_cancer(return_X_y=True)
+data_path = os.getenv("DATA")                      # DATA="data/train.csv"
+if data_path:
+    df = pd.read_csv(data_path)
+    X, y = df.drop('target', axis=1), df['target']
+else:
+    X, y = load_breast_cancer(return_X_y=True)
+
 X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.25,
                                           stratify=y, random_state=42)
 
@@ -29,4 +36,5 @@ with mlflow.start_run():                          # начало «записи�
     mlflow.sklearn.log_model(                     # записать саму модель
         pipe, name='model',                       #   (артефакт → в MinIO!)
         registered_model_name='churn-model')      #   и в реестр
+    print(f'Model trained successfully on dataset with {len(X)} rows using C={C}')
     print('f1:', f1)

@@ -2,6 +2,3 @@
     remote = storage
 ['remote "storage"']
     url = s3://data
-    endpointurl = http://localhost:9000
-    access_key_id = admin
-    secret_access_key = admin123
