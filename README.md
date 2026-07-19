@@ -9,11 +9,13 @@ Docker/Compose · GitHub Actions · Kubernetes · Airflow · Evidently
 
 ## Быстрый старт (локальная разработка)
 ```
-docker compose up -d    # запустить MLflow (http://localhost:5000) и MinIO (http://localhost:9001). После первого запуска создать bucket'ы mlflow и data — см. консоль MinIO
+docker compose up -d      # запустить MLflow (http://localhost:5000) и MinIO (http://localhost:9001). После первого запуска создать bucket'ы mlflow и data — см. консоль MinIO
 
-make install            # создать .venv и установить зависимости из requirements-dev.txt
-make train              # обучить модель (использует переменные из train/.env)
-make start-api          # запустить API: http://localhost:8000/docs (использует переменные из .env)
+make install              # создать .venv и установить зависимости из requirements-dev.txt
+make train                # обучить модель (использует переменные из train/.env)
+make start-api            # запустить API: http://localhost:8000/docs (использует переменные из .env)
+
+source .venv/bin/activate # временно поменять переменную окружения PATH, брать все команды из venv
 ```
 
 ## Тесты и стиль
