@@ -5,3 +5,4 @@ ruff==0.15.22
 pre-commit==4.6.0
 dvc[s3]==3.67.1
 evidently==0.7.21
+python-dotenv[cli]==1.2.2

@@ -1,13 +1,13 @@
 services:
-  api:
-    build: .
-    ports: ["8000:8000"]
-    environment:
-      MLFLOW_TRACKING_URI: http://mlflow:5000
-      MLFLOW_S3_ENDPOINT_URL: http://minio:9000   # чтобы читать артефакты
-      AWS_ACCESS_KEY_ID: admin                    #   модели из MinIO
-      AWS_SECRET_ACCESS_KEY: admin123
-    depends_on: [mlflow]
+  # api:
+  #   build: .
+  #   ports: ["8000:8000"]
+  #   environment:
+  #     MLFLOW_TRACKING_URI: http://mlflow:5000
+  #     MLFLOW_S3_ENDPOINT_URL: http://minio:9000   # чтобы читать артефакты
+  #     AWS_ACCESS_KEY_ID: admin                    #   модели из MinIO
+  #     AWS_SECRET_ACCESS_KEY: admin123
+  #   depends_on: [mlflow]
 
   mlflow:
     build:
