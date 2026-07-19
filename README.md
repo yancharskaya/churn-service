@@ -9,19 +9,12 @@ Docker/Compose · GitHub Actions · Kubernetes · Airflow · Evidently
 
 ## Быстрый старт (локальная разработка)
 ```
-git clone https://github.com/<логин>/churn-service && cd churn-service
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements-dev.txt
-python train.py                # обучить модель (model.pkl)
-uvicorn src.main:app --reload  # сервис: http://localhost:8000/docs
-```
+docker compose up -d    # запустить MLflow (http://localhost:5000) и MinIO (http://localhost:9001). После первого запуска создать bucket'ы mlflow и data — см. консоль MinIO
 
-## Полный стек (Docker Compose)
+make install            # создать .venv и установить зависимости из requirements-dev.txt
+make train              # обучить модель (использует переменные из train/.env)
+make start-api          # запустить API: http://localhost:8000/docs (использует переменные из .env)
 ```
-docker compose up -d
-```
-API: localhost:8000 · MLflow UI: localhost:5000 · MinIO: localhost:9001
-(после первого запуска создать bucket'ы mlflow и data — см. консоль MinIO)
 
 ## Тесты и стиль
 ```

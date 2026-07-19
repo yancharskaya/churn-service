@@ -10,14 +10,14 @@ import os
 host = os.getenv("HOST", 'http://localhost:5000')
 churn = os.getenv("CHURN", 'churn')
 
-mlflow.set_tracking_uri(host)                       # сервер из compose
-mlflow.set_experiment(churn)                        # папка для run'ов
+mlflow.set_tracking_uri(host)                      # сервер из compose
+mlflow.set_experiment(churn)                       # папка для run'ов
 
 X, y = load_breast_cancer(return_X_y=True)
 X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.25,
                                           stratify=y, random_state=42)
 
-C = float(os.getenv("C")) or 1.0                  # меняйте между запусками
+C = float(os.getenv("C") or 1.0)                  # меняйте между запусками
 with mlflow.start_run():                          # начало «записи»
     mlflow.log_param('model', 'logreg')           # записать параметр
     mlflow.log_param('C', C)
