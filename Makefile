@@ -14,3 +14,6 @@ train:
 
 data-generate:
 	.venv/bin/python data/generate.py
+
+test:
+	.venv/bin/pytest -v
