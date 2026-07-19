@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 import logging, mlflow.sklearn, os
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,   # показывать INFO и важнее
+    format='%(asctime)s %(levelname)s %(name)s: %(message)s')
 log = logging.getLogger(__name__)
 
 app = FastAPI()

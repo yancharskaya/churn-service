@@ -7,6 +7,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score
 import os
 import pandas as pd
+import logging
+logging.basicConfig(
+    level=logging.INFO,   # показывать INFO и важнее
+    format='%(asctime)s %(levelname)s %(name)s: %(message)s')
+log = logging.getLogger(__name__)
 
 host = os.getenv("HOST", 'http://localhost:5000')
 churn = os.getenv("CHURN", 'churn')
@@ -36,5 +41,5 @@ with mlflow.start_run():                          # начало «записи�
     mlflow.sklearn.log_model(                     # записать саму модель
         pipe, name='model',                       #   (артефакт → в MinIO!)
         registered_model_name='churn-model')      #   и в реестр
-    print(f'Model trained successfully on dataset with {len(X)} rows using C={C}')
-    print('f1:', f1)
+    log.info(f'Model trained successfully on dataset with {len(X)} rows using C={C}')
+    log.info(f'f1:, {f1}')
