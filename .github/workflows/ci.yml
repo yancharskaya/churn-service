@@ -16,11 +16,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: '3.14' }
+        with: 
+          python-version: '3.14'
+          cache: 'pip'
+          cache-dependency-path: 'requirements-dev.txt'
       - run: pip install -r requirements-dev.txt
       - run: python train/train.py
       - run: pytest tests/ -v
-
+      
       - name: Upload model artifact
         uses: actions/upload-artifact@v4
         with:
@@ -29,6 +32,7 @@ jobs:
 
   build:
     needs: [lint, test]
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions: { packages: write, contents: read }
     steps:
@@ -52,12 +56,11 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
-          tags: |            
-            # 1. Ветка + хэш (например: dev-8c34f21)
-            type=sha,format=short,prefix=${{ github.ref_name }}-
-            
-            # 2. Ветка + latest (обновляется при каждом билде в этой ветке)
-            type=raw,value=${{ github.ref_name }}-latest
+          tags: |
+            # 1. хэш (например: 8c34f21)
+            type=sha,format=short
+            # 2. latest
+            type=raw,value=latest
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
