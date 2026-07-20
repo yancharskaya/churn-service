@@ -32,9 +32,8 @@ jobs:
 
   build:
     needs: [lint, test]
-    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    permissions: { packages: write, contents: read }
+    permissions: { packages: write, contents: write }
     steps:
       - uses: actions/checkout@v4
 
@@ -44,7 +43,17 @@ jobs:
           name: trained-model
           path: .
 
+      # Генерируем новую версию (только при пуше/мерже в main)
+      - name: Bump version and push Git tag
+        id: tag_version
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch # По умолчанию увеличивает последнюю цифру (v1.0.0 -> v1.0.1)
+
       - name: Log in to GHCR
+        if: github.ref == 'refs/heads/main'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -56,16 +65,32 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
-          tags: |
+          tags: |            
             # 1. хэш (например: 8c34f21)
             type=sha,format=short
+            
             # 2. latest
             type=raw,value=latest
+
+            # 3. tag релиза из github
+            type=raw,value=${{ steps.tag_version.outputs.new_tag }},enable=${{ steps.tag_version.outputs.new_tag != '' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: true
+          push: ${{ github.ref == 'refs/heads/main' }} 
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          # Включаем кеширование слоев Docker
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Создаем автоматический релиз в GitHub (только для main)
+      - name: Create a GitHub release
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          generateReleaseNotes: true
