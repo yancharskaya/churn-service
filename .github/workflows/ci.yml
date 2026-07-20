@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: '3.11' }
+        with: { python-version: '3.14' }
       - run: pip install ruff
       - run: ruff check src/
 
@@ -16,10 +16,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: '3.11' }
+        with: { python-version: '3.14' }
       - run: pip install -r requirements-dev.txt
       - run: python train/train.py
       - run: pytest tests/ -v
+
+      - name: Upload model artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trained-model
+          path: model.pkl
 
   build:
     needs: [lint, test]
@@ -28,7 +34,36 @@ jobs:
     permissions: { packages: write, contents: read }
     steps:
       - uses: actions/checkout@v4
-      - run: echo "${{ secrets.GITHUB_TOKEN }}" |
-             docker login ghcr.io -u ${{ github.actor }} --password-stdin
-      - run: docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
-      - run: docker push  ghcr.io/${{ github.repository }}:${{ github.sha }}
+
+      - name: Download model artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: trained-model
+          path: .
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |            
+            # 1. Ветка + хэш (например: dev-8c34f21)
+            type=sha,format=short,prefix=${{ github.ref_name }}-
+            
+            # 2. Ветка + latest (обновляется при каждом билде в этой ветке)
+            type=raw,value=${{ github.ref_name }}-latest
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
