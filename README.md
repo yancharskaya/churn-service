@@ -55,7 +55,7 @@ ruff check src/
 ## CI
 Образ заливается только при мерже pull request в main, также проставляется тег и релиз автоматически на основании изменений
 
-## Прогресс
+## TODO
 - [x] Multi-stage Docker-образ + /health
 - [x] Compose: api + MLflow + MinIO
 - [x] MLflow: трекинг и реестр (модель из реестра)
