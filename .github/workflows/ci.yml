@@ -82,10 +82,7 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }} 
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # Включаем кеширование слоев Docker
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
+      
       # Создаем автоматический релиз в GitHub (только для main)
       - name: Create a GitHub release
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
