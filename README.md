@@ -1,10 +1,12 @@
+[![ci](https://github.com/yancharskaya/churn-service/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/yancharskaya/churn-service/actions/workflows/ci.yml)
+
 # churn-service
 
 Учебный MLOps-проект: sklearn-модель за FastAPI — с Docker,
 CI, реестром моделей (MLflow) и версионированием данных (DVC).
 
 ## Стек
-Python 3.11 · FastAPI · scikit-learn · MLflow · DVC · MinIO ·
+Python 3.14 · FastAPI · scikit-learn · MLflow · DVC · MinIO ·
 Docker/Compose · GitHub Actions · Kubernetes · Airflow · Evidently
 
 ## Быстрый старт (локальная разработка)
@@ -50,12 +52,16 @@ pytest -v
 ruff check src/
 ```
 
+## CI
+Для того, чтобы сделать merge в main, должны быть успешно выполнены jobs: lint, test, build.
+Добавлена возможность собирать образ в build, находясь в любой ветке, но заливать его в реестр только из main.
+
 ## Прогресс
 - [x] Multi-stage Docker-образ + /health
 - [x] Compose: api + MLflow + MinIO
-- [ ] MLflow: трекинг и реестр (модель из реестра)
-- [ ] DVC: данные версионируются в MinIO
-- [ ] CI: lint → test → build (GitHub Actions)
+- [x] MLflow: трекинг и реестр (модель из реестра)
+- [x] DVC: данные версионируются в MinIO
+- [x] CI: lint → test → build (GitHub Actions)
 - [ ] Kubernetes: Deployment + Service
 - [ ] Airflow: DAG переобучения
 - [ ] Evidently: drift-отчёт
