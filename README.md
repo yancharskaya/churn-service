@@ -2,12 +2,12 @@
 
 # churn-service
 
-Учебный MLOps-проект: sklearn-модель за FastAPI — с Docker,
+sklearn-модель за FastAPI — с Docker,
 CI, реестром моделей (MLflow) и версионированием данных (DVC).
 
 ## Стек
 Python 3.14 · FastAPI · scikit-learn · MLflow · DVC · MinIO ·
-Docker/Compose · GitHub Actions · Kubernetes · Airflow · Evidently
+Docker/Compose · Airflow · Evidently
 
 ## Быстрый старт (локальная разработка)
 ```
