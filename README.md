@@ -61,6 +61,6 @@ ruff check src/
 - [x] MLflow: трекинг и реестр (модель из реестра)
 - [x] DVC: данные версионируются в MinIO
 - [x] CI: lint → test → build (GitHub Actions)
-- [ ] Kubernetes: Deployment + Service
-- [ ] Airflow: DAG переобучения
+- [x] Kubernetes: Deployment + Service
+- [x] Airflow: DAG переобучения
 - [ ] Evidently: drift-отчёт
