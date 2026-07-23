@@ -9,3 +9,4 @@ drift_report.html
 .env
 .DS_Store
 data/*.csv
+logs/
