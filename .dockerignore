@@ -11,7 +11,7 @@ data/                # данным место в хранилище, не в о
 k8s/
 dags/
 mlflow.db
-drift_report.html
 *.md                 # README в образе не нужен
 .dvc/cache          # локальный кэш DVC бывает гигантским
 logs/
+reports/

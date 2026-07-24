@@ -20,3 +20,6 @@ data-generate:
 
 test:
 	.venv/bin/pytest -v
+
+drift-check:
+	.venv/bin/python monitoring/drift_check.py
