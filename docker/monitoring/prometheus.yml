@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s        # как часто забирать метрики
+scrape_configs:
+  - job_name: churn-api
+    static_configs:
+      - targets: ['host.docker.internal:8000']   # ваш сервис.
+        # host.docker.internal = «хост-машина» с точки зрения контейнера;
+        # так Prometheus в контейнере дотянется до сервиса на localhost:8000.
+        # Если сервис тоже в этом compose — просто targets: ['api:8000']
