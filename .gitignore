@@ -5,8 +5,8 @@ __pycache__/
 .ruff_cache/
 model.pkl
 mlflow.db
-drift_report.html
 .env
 .DS_Store
 data/*.csv
 logs/
+reports/
