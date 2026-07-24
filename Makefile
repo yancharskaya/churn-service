@@ -3,6 +3,9 @@ install:
 	.venv/bin/pip install -r requirements-dev.txt
 
 start-api:
+	.venv/bin/uvicorn src.main:app --env-file .env
+
+start-api-dev:
 	.venv/bin/uvicorn src.main:app --reload --env-file .env
 
 clean:

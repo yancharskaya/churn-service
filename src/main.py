@@ -4,6 +4,7 @@ import logging
 import mlflow.sklearn
 import os
 import joblib
+from prometheus_fastapi_instrumentator import Instrumentator
 
 logging.basicConfig(
     level=logging.INFO,  # показывать INFO и важнее
@@ -38,3 +39,6 @@ def health():
 def predict(f: Features):
     pred = model.predict([f.values])
     return {"prediction": int(pred[0])}
+
+
+Instrumentator().instrument(app).expose(app)
