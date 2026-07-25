@@ -91,3 +91,30 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           generateReleaseNotes: true
+
+  bump-deployment:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone deploy repository
+        uses: actions/checkout@v4
+        with:
+          repository: yancharskaya/churn-deployment
+          token: ${{ secrets.DEPLOY_REPO_TOKEN }}
+          path: deployment
+
+      - name: Update new image tag
+        run: |
+          cd deployment
+          yq -i '.image.tag = "${{ github.sha }}"' \
+             charts/churn-service/values.yaml
+
+      - name: Commit and push
+        run: |
+          cd deployment
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add charts/churn-service/values.yaml
+          git commit -m 'deploy: churn-service ${{ github.sha }}' || exit 0
+          git push
