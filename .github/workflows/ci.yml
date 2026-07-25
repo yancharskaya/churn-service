@@ -33,6 +33,8 @@ jobs:
   build:
     needs: [lint, test]
     runs-on: ubuntu-latest
+    outputs:
+      release_tag: ${{ steps.tag_version.outputs.new_tag }}
     permissions: { packages: write, contents: write }
     steps:
       - uses: actions/checkout@v4
@@ -107,7 +109,7 @@ jobs:
       - name: Update new image tag
         run: |
           cd deployment
-          yq -i '.image.tag = "${{ github.sha }}"' \
+          yq -i '.image.tag = "${{ needs.build.outputs.release_tag }}"' \
              charts/churn-service/values.yaml
 
       - name: Commit and push
@@ -116,5 +118,5 @@ jobs:
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add charts/churn-service/values.yaml
-          git commit -m 'deploy: churn-service ${{ github.sha }}' || exit 0
+          git commit -m 'deploy: churn-service ${{ needs.build.outputs.release_tag }}' || exit 0
           git push
