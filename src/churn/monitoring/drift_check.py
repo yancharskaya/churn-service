@@ -20,10 +20,10 @@ def make_current(reference: pd.DataFrame) -> pd.DataFrame:
     """
     current = reference.copy()
     if "mean radius" in current:
-        current["mean radius"] *= 1.3
+        current["0"] *= 1.3
     if "mean texture" in current:
         rng = np.random.default_rng(42)
-        current["mean texture"] += rng.normal(0, 5, len(current))
+        current["1"] += rng.normal(0, 5, len(current))
     return current
 
 
