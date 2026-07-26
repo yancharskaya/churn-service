@@ -1,15 +1,16 @@
+import logging
+import os
+
+import joblib
 import mlflow
 import mlflow.sklearn
+import pandas as pd
 from sklearn.datasets import load_breast_cancer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import f1_score
-import os
-import pandas as pd
-import joblib
-import logging
 
 logging.basicConfig(
     level=logging.INFO,  # показывать INFO и важнее
@@ -26,9 +27,7 @@ if data_path:
 else:
     X, y = load_breast_cancer(return_X_y=True)
 
-X_tr, X_te, y_tr, y_te = train_test_split(
-    X, y, test_size=0.25, stratify=y, random_state=42
-)
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.25, stratify=y, random_state=42)
 
 
 def train_model_mlflow():
@@ -39,9 +38,7 @@ def train_model_mlflow():
     with mlflow.start_run():  # начало «записи»
         mlflow.log_param("model", "logreg")  # записать параметр
         mlflow.log_param("C", C)
-        pipe = Pipeline(
-            [("sc", StandardScaler()), ("lr", LogisticRegression(C=C, max_iter=1000))]
-        )
+        pipe = Pipeline([("sc", StandardScaler()), ("lr", LogisticRegression(C=C, max_iter=1000))])
         pipe.fit(X_tr, y_tr)
         f1 = f1_score(y_te, pipe.predict(X_te))
         mlflow.log_metric("f1", f1)  # записать метрику
@@ -50,16 +47,12 @@ def train_model_mlflow():
             name="model",  #   (артефакт → в MinIO!)
             registered_model_name="churn-model",
         )  #   и в реестр
-        log.info(
-            f"Model trained successfully on dataset with {len(X)} rows using C={C}"
-        )
+        log.info(f"Model trained successfully on dataset with {len(X)} rows using C={C}")
         log.info(f"f1:, {f1}")
 
 
 def train_model_local():
-    pipe = Pipeline(
-        [("sc", StandardScaler()), ("lr", LogisticRegression(max_iter=1000))]
-    )
+    pipe = Pipeline([("sc", StandardScaler()), ("lr", LogisticRegression(max_iter=1000))])
     pipe.fit(X_tr, y_tr)
     log.info(f"f1:, {f1_score(y_te, pipe.predict(X_te))}")
     joblib.dump(pipe, "model.pkl")

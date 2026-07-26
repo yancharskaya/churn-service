@@ -1,10 +1,11 @@
-from fastapi import FastAPI
-from pydantic import BaseModel, Field
 import logging
-import mlflow.sklearn
 import os
+
 import joblib
+import mlflow.sklearn
+from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
+from pydantic import BaseModel, Field
 
 logging.basicConfig(
     level=logging.INFO,  # показывать INFO и важнее
@@ -25,9 +26,7 @@ log.info("model loaded")
 
 
 class Features(BaseModel):  # breast_cancer имеет 30 признаков;
-    values: list[float] = Field(
-        ..., min_length=30, max_length=30
-    )  # для простоты принимаем списком
+    values: list[float] = Field(..., min_length=30, max_length=30)  # для простоты принимаем списком
 
 
 @app.get("/health")
