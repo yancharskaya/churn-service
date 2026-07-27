@@ -10,3 +10,4 @@ mlflow.db
 data/*.csv
 logs/
 reports/
+churn.egg-info/

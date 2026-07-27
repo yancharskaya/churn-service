@@ -1,0 +1,31 @@
+name: CI (Pull Request)
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Вызываем наши проверки из общего файла
+  checks:
+    uses: ./.github/workflows/checks.yml
+
+  # Тестируем сборку (без пуша)
+  build-test:
+    needs: checks
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: churn-service
+            dockerfile: docker/api.Dockerfile
+          - image: churn-train
+            dockerfile: docker/train.Dockerfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: false # Не пушим в GHCR при PR!

@@ -1,0 +1,25 @@
+name: Shared Checks
+
+on:
+  workflow_call: # Позволяет вызывать этот workflow из других файлов
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.14' }
+      - run: pip install ruff==0.15.22
+      - run: ruff check src tests
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: pip
+      - run: pip install -e ".[api,train,dev]"
+      - run: pytest tests/unit -q
