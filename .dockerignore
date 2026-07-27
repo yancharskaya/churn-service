@@ -15,3 +15,4 @@ mlflow.db
 .dvc/cache          # локальный кэш DVC бывает гигантским
 logs/
 reports/
+*.egg-info/
