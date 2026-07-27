@@ -1,0 +1,102 @@
+name: Release Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  # Вызываем те же самые проверки!
+  checks:
+    uses: ./.github/workflows/checks.yml
+
+  prepare-release:
+    needs: checks
+    runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.tag_version.outputs.new_tag }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bump version and push Git tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch
+
+  build-and-push:
+    needs: prepare-release
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: churn-service
+            dockerfile: docker/api.Dockerfile
+          - image: churn-train
+            dockerfile: docker/train.Dockerfile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}
+          tags: |
+            type=sha,format=short
+            type=raw,value=latest
+            type=raw,value=${{ needs.prepare-release.outputs.new_tag }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  create-release:
+    needs: [prepare-release, build-and-push]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ needs.prepare-release.outputs.new_tag }}
+          name: Release ${{ needs.prepare-release.outputs.new_tag }}
+          generateReleaseNotes: true
+
+  bump-deployment:
+    needs: [prepare-release, build-and-push]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: yancharskaya/churn-deployment
+          token: ${{ secrets.DEPLOY_REPO_TOKEN }}
+      - name: Update tags
+        run: |
+          yq -i '.image.tag = "${{ github.sha }}"' charts/churn-service/values.yaml
+          yq -i '.trainImage.tag = "${{ github.sha }}"' charts/churn-service/values.yaml
+      - name: Commit and push
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add charts/churn-service/values.yaml
+          git diff --cached --quiet || { git commit -m 'deploy: churn ${{ github.sha }}' && git push; }
